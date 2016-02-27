@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-![Darknet Logo](http://pjreddie.com/media/files/darknet-black-small.png)
+![Darknet Logo](http://pjreddie.com/static/img/darknet.png)
 
 #Darknet#
 Darknet is an open source neural network framework written in C and CUDA. It is fast, easy to install, and supports CPU and GPU computation.
@@ -10,7 +9,7 @@ For questions or issues please use the [Google Group](https://groups.google.com/
 
 #About This Fork#
 
-![Yolo logo](http://guanghan.info/blog/en/wp-content/uploads/2015/12/images-40.jpg)
+![Yolo logo](https://olimex.files.wordpress.com/2014/04/tv.png)
 
 1. This fork repository adds some additional niche in addition to the current darkenet from pjreddie. e.g.
 
@@ -26,47 +25,20 @@ For questions or issues please use the [Google Group](https://groups.google.com/
 
    The procedure is documented in README.md.
    
-   Or you can read this article: [Start Training YOLO with Our Own Data](http://guanghan.info/blog/en/my-works/train-yolo/).
 
 #DEMOS of YOLO trained with our own data#
-Yield Sign: [https://youtu.be/5DJVLV3P47E](https://youtu.be/5DJVLV3P47E)
 
-Stop Sign: [https://youtu.be/0CQMb3NGlMk](https://youtu.be/0CQMb3NGlMk)
-
-The cfg that I used is here: [darknet/cfg/yolo_2class_box11.cfg](https://github.com/Guanghan/darknet/blob/master/cfg/yolo_2class_box11.cfg)
-
-The weights that I trained can be downloaded here: (UPDATED 1/13/2016)
-[yolo_2class_box11_3000.weights](http://guanghan.info/download/yolo_2class_box11_3000.weights)
-
-The pre-compiled software with source code package for the demo:
-[darknet-video-2class.zip](http://guanghan.info/download/darknet-video-2class.zip)
-
-You can use this as an example. In order to run the demo on a video file, just type: 
-
-./darknet yolo vid_demo cfg/yolo_2class_box11.cfg model/yolo_2class_box11_3000.weights /video/test.mp4
-
-
-If you would like to repeat the training process or get a feel of YOLO, you can download the data I collected and the annotations I labeled. 
-
-images: [images.tar.gz](http://guanghan.info/download/images.tar.gz)
-
-labels: [labels.tar.gz](http://guanghan.info/download/labels.tar.gz)
-
-The demo is trained with the above data and annotations.
+TV : [https://www.youtube.com/watch?v=t4_O5Cs7uRM](https://www.youtube.com/watch?v=t4_O5Cs7uRM)
 
 #How to Train With Customized Data and Class Numbers/Labels#
 
 1. Collect Data and Annotation
-   
-   (1). For Videos, we can use video summary, shot boundary detection or camera take detection, to create static images.
-   
-   (2). For Images, we can use [BBox-Label-Tool](https://github.com/puzzledqs/BBox-Label-Tool) to label objects. The data I used for the demo was downloaded from [Google Images](https://images.google.com/), and hand-labeled by my intern employees. (Just kidding, I had to label it myself. Damn it...) Since I am training with only two classes, and that the signs have less distortions and variances (compared to person or car, for example), I only trained around 300 images for each class to get a decent performance. But if you are training with more classes or harder classes, I suggest you have at least 1000 images for each class.
-
+   Crowd Sourcing by students
 2. Create Annotation in Darknet Format 
    
-   (1). If we choose to use VOC data to train, use [scripts/voc_label.py](https://github.com/Guanghan/darknet/blob/master/scripts/voc_label.py) to convert existing VOC annotations to darknet format.
+   (1). If we choose to use VOC data to train, use [scripts/voc_label.py] to convert existing VOC annotations to darknet format.
    
-   (2). If we choose to use our own collected data, use [scripts/convert.py](https://github.com/Guanghan/darknet/blob/master/scripts/convert.py) to convert the annotations.
+   (2). If we choose to use our own collected data, use [scripts/convert.py](https://github.com/frankzhangrui/Darknet-Yolo/blob/master/convert.py) to convert the annotations.
 
    At this step, we should have darknet annotations(.txt) and a training list(.txt).
    
@@ -88,15 +60,7 @@ The demo is trained with the above data and annotations.
    
    ....
    
-   Note that each image corresponds to an annotation file. But we only need one single training list of images. Remember to put the folder "images" and folder "annotations" in the same parent directory, as the darknet code look for annotation files this way (by default). 
-   
-   You can download some examples to understand the format:
-   
-   [before_conversion.txt](http://guanghan.info/download/before_conversion.txt)
-   
-   [after_conversion.txt](http://guanghan.info/download/after_conversion.txt)
-   
-   [training_list.txt](http://guanghan.info/download/training_list.txt)
+   Note that each image corresponds to an annotation file. But we only need one single training list of images. Remember to put the folder "images" and folder "labels" in the same parent directory, as the darknet code look for annotation files this way (by default). 
    
    
 3. Modify Some Code
@@ -109,7 +73,7 @@ The demo is trained with the above data and annotations.
    
    (3) Now we are able to train with new classes, but there is one more thing to deal with. In YOLO, the number of parameters of the second last layer is not arbitrary, instead it is defined by some other parameters including the number of classes, the side(number of splits of the whole image). Please read [the paper](http://arxiv.org/abs/1506.02640)  
        
-       (5 x 2 + number_of_classes) x 7 x 7, as an example, assuming no other parameters are modified.  
+       (5 x 2 + number_of_classes) x 11 x 11, as an example, assuming no other parameters are modified.  
        
        Therefore, in [cfg/yolo.cfg](https://github.com/Guanghan/darknet/blob/master/cfg/yolo.cfg), change the "output" in line 218, and "classes" in line 222.
        
