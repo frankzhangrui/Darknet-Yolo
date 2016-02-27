@@ -20,7 +20,7 @@ for file in os.listdir("Annotations"):
         filename = file[:-4]+".jpg"
         f = open("Annotations/"+file)
         h = open("labels/"+file,"w")
-        filepath = path + "/imgs/"+filename
+        filepath = path + "/images/"+filename
         g.write(filepath+"\n")
         for line in f.readlines():
             match = re.findall(r"\((\d+), (\d+)\) \((\d+), (\d+)\)", line)
