@@ -121,11 +121,5 @@ The demo is trained with the above data and annotations.
 
    ./darknet yolo train cfg/yolo.cfg extraction.conv.weights
 
-#Contact#
-If you find any problems regarding the procedure, contact me at [gnxr9@mail.missouri.edu](gnxr9@mail.missouri.edu).
-
-Or you can join the aforesaid [Google Group](https://groups.google.com/forum/#!forum/darknet); there are many brilliant people asking and answering questions out there.
-=======
 # Darknet-Yolo
 Object Detection End-to-End framework
->>>>>>> 99a7242a0c5b7093590b357525f67d1e23abc829
