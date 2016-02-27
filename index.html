@@ -1,0 +1,203 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>ImageNet Classification</title>
+        <meta name="author" content="Joseph Redmon">
+                <meta name="msvalidate.01" content="305CD82AE65FC4C9597F80416C1271B7" />
+		<link rel='stylesheet' media='screen' href='/static/css_v2.2/base.css' />
+		<link rel='stylesheet' media='screen' href='/static/css_v2.2/darknet.css' />
+        <link rel='stylesheet' media='screen' href='/static/css_v2.2/index.css' />
+		<link rel='stylesheet' media='screen' href='/static/css_v2.2/papers.css' />
+		<link rel='stylesheet' media='screen' href='/static/css_v2.2/projects.css' />
+		<link rel='stylesheet' media='screen' href='/static/css_v2.2/coqindex.css' />
+
+        <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,400italic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,100italic,100,500' rel='stylesheet' type='text/css'>
+		
+		<link rel='icon' type='image/png' href='/static/icon.png' />
+		
+		
+        <meta name="description" content="Classify images with popular models like AlexNet and VGG-16.">
+	
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-37236849-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+	</head>
+
+	<body>
+		<div class=top>
+            <div class=main>
+			<ul class="nav">
+				<li><a href="/">home</a></li>
+				<li class=relative><a href="/darknet/"><img id=dncircle src="/static/img/darknet_notext.png"></img>darknet</a></li>
+				<li class=relative><a href="/coq-tactics/"><img id=dncircle src="/static/img/coq.png"></img>coq tactics</a></li>
+				<li><a href="/publications/">publications</a></li>
+				<li><a href="/projects/">projects</a></li>
+				
+				<li><a href="/resume/">résumé</a></li>
+			</ul>
+            </div>
+			<div class=break></div>
+			
+			<div class=break></div>
+		</div>
+		
+    <div class="main markdown">
+        <p id=dnlogo>
+            
+                <img  src="/static/img/darknet.png"></img>
+            
+        </p>
+        <h1>ImageNet Classification</h1>
+        <p>You can use Darknet to classify images for the 1000-class <a href="http://image-net.org/challenges/LSVRC/2015/index">ImageNet challenge</a>. If you haven't installed Darknet yet, you should <a href="http://pjreddie.com/darknet/install/">do that first</a>.</p>
+<h2>Classifying With Pre-Trained Models</h2>
+<p>You already have some ImageNet classification models in the <code>cfg/</code> subdirectory. Since we don't want to train them just yet, let's download a pre-trained weight file to play with. We'll use the Extraction model for this example, you can read more about it <a href="#extraction">below</a>. First we'll get it from the server:</p>
+<pre><code>curl -O http://pjreddie.com/media/files/extraction.weights
+</code></pre>
+<p>Now you can run the Extraction model on the included images in the <code>data/</code> subdirectory. Run the command:</p>
+<pre><code>./darknet imagenet test cfg/extraction.cfg extraction.weights data/dog.jpg
+</code></pre>
+<p>And you should see the following output:</p>
+<pre><code>0: Crop Layer: 256 x 256 -&gt; 224 x 224 x 3 image
+1: Convolutional Layer: 224 x 224 x 3 image, 64 filters -&gt; 112 x 112 x 64 image
+....
+25: Avgpool Layer: 7 x 7 x 1024 image
+26: Connected Layer: 1024 inputs, 1000 outputs
+27: Softmax Layer: 1000 inputs
+28: Cost Layer: 1000 inputs
+Loading weights from extraction.weights...Done!
+data/dog.jpg: Predicted in 2.643165 seconds.
+malamute: 0.501060
+Eskimo dog: 0.108530
+Siberian husky: 0.081242
+keeshond: 0.045474
+miniature schnauzer: 0.036140
+dogsled: 0.035162
+German shepherd: 0.016895
+Norwegian elkhound: 0.011280
+standard schnauzer: 0.008988
+Old English sheepdog: 0.007876
+</code></pre>
+<p>Darknet displays information as it loads the config file and weights, then it classifies the image and prints the top-10 classes for the image. Kelp is a mixed breed dog but she has a lot of malamute in her so we'll consider this a success!</p>
+<p>You can also try with other images, like the bald eagle image:</p>
+<pre><code>./darknet imagenet test cfg/extraction.cfg extraction.weights data/eagle.jpg
+</code></pre>
+<p>Which produces:</p>
+<pre><code>....
+27: Softmax Layer: 1000 inputs
+28: Cost Layer: 1000 inputs
+Loading weights from extraction.weights...Done!
+data/eagle.jpg: Predicted in 2.641345 seconds.
+bald eagle: 0.621742
+kite: 0.141690
+vulture: 0.135128
+ruddy turnstone: 0.050260
+....
+</code></pre>
+<p>Pretty good!</p>
+<p>If you don't specify an image file you will be prompted at run-time for an image. This way you can classify multiple in a row without reloading the whole model. Use the command:</p>
+<pre><code>./darknet imagenet test cfg/extraction.cfg extraction.weights
+</code></pre>
+<p>Then you will get a prompt that looks like:</p>
+<pre><code>....
+27: Softmax Layer: 1000 inputs
+28: Cost Layer: 1000 inputs
+Loading weights from extraction.weights...Done!
+Enter Image Path:
+</code></pre>
+<p>Whenever you get bored of classifying images you can use <code>Ctrl-C</code> to exit the program.</p>
+<h2>Validating On ImageNet</h2>
+<p>You see these validation set numbers thrown around everywhere. Maybe you want to double check for yourself how well these models actually work. Let's do it!</p>
+<p>First you need to download the validation images, and the cls-loc annotations. You can get them <a href="http://image-net.org/download-images">here</a> but you'll have to make an account! Once you download everything you should have a directory with <code>ILSVRC2012_bbox_val_v3.tgz</code>, and <code>ILSVRC2012_img_val.tar</code>. First we unpack them:</p>
+<pre><code>tar -xzf ILSVRC2012_bbox_val_v3.tgz
+mkdir -p imgs &amp;&amp; tar xf ILSVRC2012_img_val.tar -C imgs
+</code></pre>
+<p>Now we have the images and the annotations but we need to label the images so Darknet can evaluate its predictions. We do that using this bash <a href="https://github.com/pjreddie/darknet/blob/master/scripts/imagenet_label.sh">script</a>. It's already in your <code>scripts/</code> subdirectory. We can just get it again though and run it:</p>
+<pre><code>curl -O http://pjreddie.com/media/files/imagenet_label.sh
+bash imagenet_label.sh
+</code></pre>
+<p>This will generate two things: a directory called <code>labelled/</code> which contains renamed symbolic links to the images, and a file called <code>inet.val.list</code> which contains a list of the paths of the labelled images. We need to move this file to the <code>data/</code> subdirectory in Darknet:</p>
+<pre><code>mv inet.val.list &lt;path-to&gt;/darknet/data
+</code></pre>
+<p>Now you are finally ready to validate your model! First re-<code>make</code> Darknet. Then run the validation routine like so:</p>
+<pre><code>./darknet imagenet valid cfg/extraction.cfg extraction.weights
+</code></pre>
+<p>Note: if you don't compile Darknet with <a href="http://pjreddie.com/darknet/install/#opencv">OpenCV</a> then you won't be able to load all of the ImageNet images since some of them are weird formats not supported by <a href="https://github.com/nothings/stb/blob/master/stb_image.h"><code>stb_image.h</code></a>.</p>
+<p>If you don't compile with <a href="http://pjreddie.com/darknet/install/#cuda">CUDA</a> you can still validate on ImageNet but it will take like a reallllllly long time. Not recommended.</p>
+<p>Lastly, if you are running validation often, it is worth it to resize the images down to 256x256. This cuts down on loading time significantly. You can use the following <code>ImageMagick</code> command:</p>
+<pre><code>mogrify -resize 256x256\! imgs/*.JPEG
+</code></pre>
+<h2>Pre-Trained Models</h2>
+<p>Here are a variety of pre-trained models for ImageNet classification. Accuracy is measured as single-crop validation accuracy on ImageNet. GPU timing is measured on a Titan X, CPU timing on an Intel i7-4790K (4 GHz).</p>
+<h3>AlexNet</h3>
+<p>The model that started a revolution! The <a href="http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf">original</a> model was crazy with the split GPU thing so this is the model from some <a href="http://arxiv.org/abs/1404.5997">follow-up work</a>.</p>
+<ul>
+<li>Top-1 Accuracy: 57.0%</li>
+<li>Top-5 Accuracy: 80.3%</li>
+<li>Forward Timing: 1.5 ms/img</li>
+<li>Forward/Backward Timing: 3.0 ms/img</li>
+<li>CPU Forward Timing: 0.3 s/img</li>
+<li><a href="https://github.com/pjreddie/darknet/blob/master/cfg/alexnet.cfg">cfg file</a></li>
+<li><a href="http://pjreddie.com/media/files/alexnet.weights">weight file (285 MB)</a></li>
+</ul>
+<h3><a name="reference"></a>Darknet Reference Model</h3>
+<p>This model is designed to be small but powerful. It attains the same top-1 and top-5 performance as AlexNet but with 1/10th the parameters. It uses mostly convolutional layers without the large fully connected layers at the end. It is about twice as fast as AlexNet on CPU making it more suitable for some vision applications.</p>
+<ul>
+<li>Top-1 Accuracy: 59.7%</li>
+<li>Top-5 Accuracy: 82.0%</li>
+<li>Forward Timing: 1.5 ms/img</li>
+<li>Forward/Backward Timing: 3.2 ms/img</li>
+<li>CPU Forward Timing: 0.16 s/img</li>
+<li><a href="https://github.com/pjreddie/darknet/blob/master/cfg/darknet.cfg">cfg file</a></li>
+<li><a href="http://pjreddie.com/media/files/darknet.weights">weight file (28 MB)</a></li>
+</ul>
+<h3><a name="vgg"></a>VGG-16</h3>
+<p>The <a href="http://www.robots.ox.ac.uk/~vgg/research/very_deep/">Visual Geometry Group</a> at Oxford developed the VGG-16 model for the ILSVRC-2014 competition. It is highly accurate and widely used for classification and detection. I adapted this version from the <a href="http://caffe.berkeleyvision.org/">Caffe</a> pre-trained <a href="https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md">model</a>. It was trained for an additional 6 epochs to adjust to Darknet-specific image preprocessing (instead of mean subtraction Darknet adjusts images to fall between -1 and 1).</p>
+<ul>
+<li>Top-1 Accuracy: 70.5%</li>
+<li>Top-5 Accuracy: 90.0%</li>
+<li>Forward Timing: 10.7 ms/img</li>
+<li>Forward/Backward Timing: 33.2 ms/img</li>
+<li>CPU Forward Timing: 4.9 s/img</li>
+<li><a href="https://github.com/pjreddie/darknet/blob/master/cfg/vgg-16.cfg">cfg file</a></li>
+<li><a href="http://pjreddie.com/media/files/vgg-16.weights">weight file (528 MB)</a></li>
+</ul>
+<h3>Extraction<a name="extraction"></a></h3>
+<p>I developed this model as an offshoot of the <a href="http://arxiv.org/abs/1409.4842">GoogleNet model</a>. It doesn't use the "inception" modules, only 1x1 and 3x3 convolutional layers.</p>
+<ul>
+<li>Top-1 Accuracy: 70.4%</li>
+<li>Top-5 Accuracy: 89.8%</li>
+<li>Forward Timing: 7.5 ms/img</li>
+<li>Forward/Backward Timing: 14.4 ms/img</li>
+<li>CPU Forward Timing: 1.8 s/img</li>
+<li><a href="https://github.com/pjreddie/darknet/blob/master/cfg/extraction.cfg">cfg file</a></li>
+<li><a href="http://pjreddie.com/media/files/extraction.weights">weight file (90 MB)</a></li>
+</ul>
+<h3>Strided<a name="strided"></a></h3>
+<p>This is similar to the Extraction model but instead of maxpooling it uses strided convolutions to downsample the feature space.</p>
+<ul>
+<li>Top-1 Accuracy: 65.7%</li>
+<li>Top-5 Accuracy: 86.5%</li>
+<li>Forward Timing: 4.5 ms/img</li>
+<li>Forward/Backward Timing: 10.4 ms/img</li>
+<li>CPU Forward Timing: 0.8 s/img</li>
+<li><a href="https://github.com/pjreddie/darknet/blob/master/cfg/strided.cfg">cfg file</a></li>
+<li><a href="http://pjreddie.com/media/files/strided.weights">weight file (327 MB)</a></li>
+</ul>
+    </div>
+    
+        
+
+	</body>
+</html>
